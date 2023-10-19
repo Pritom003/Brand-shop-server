@@ -118,16 +118,16 @@ app.put('/products/:id', async (req, res) => {
 
 
 
-app.delete('/products/:id',async(req,res)=>{
+app.delete('/carts/id/:id',async(req,res)=>{
   const id =req.params.id
-  const query ={_id:new ObjectId(id)}
- const result= await ProductCullections.deleteOne(query)
+  const query ={_id:id}
+ const result= await CartCullections.deleteOne(query)
  res.send(result)
 })
 
-app.get('/carts/idnodemin/:id', async (req, res) => {
+app.get('/carts/id/:id', async (req, res) => {
   const id = req.params.id;
-  const query = { _id:new ObjectId(id)};
+  const query = { _id:id};
   const result = await CartCullections.findOne(query);
   res.send(result);
 });
