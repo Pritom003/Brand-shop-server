@@ -27,7 +27,19 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 //CRUD _________________________________________________________________________
-const ProductCullections=client.db('productsDB').collection('products')
+const ProductCullections=client.db('productsDB').collection('products') 
+// const CartCullections=client.db('productsDB').collection('carts') 
+const CartCullections = client.db('productsDB').collection('carts');
+
+
+app.get('/carts',async (req,res)=>{
+  const cursor =CartCullections.find()
+  const result= await cursor.toArray()
+  res.send(result);
+  
+  
+  })
+
 
 
 
@@ -39,12 +51,69 @@ res.send(result);
 
 })
 
-app.get('/products/:id',async(req,res)=>{
-  const id=req.params.id
-  const query={_id:new ObjectId(id)}
-  const result=await ProductCullections.findOne(query)
-   res.send(result)
+
+
+// ...
+
+app.get('/products/id/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) };
+  const result = await ProductCullections.findOne(query);
+  res.send(result);
+});
+
+app.get('/products/brand/:brandName', async (req, res) => {
+  const brandName = req.params.brandName;
+  const query = { brandName };
+  const result = await ProductCullections.find(query).toArray();
+  res.send(result);
+});
+
+// ...
+app.post('/products',async(req,res)=>{
+  const newproduct=req.body
+const result=await ProductCullections.insertOne(newproduct)
+res.send(result)
+
+
 })
+ 
+
+
+
+app.get('/products/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id: new ObjectId(id) }
+  const result = await ProductCullections.findOne(query)
+  res.send(result)
+})
+
+app.put('/products/:id', async (req, res) => {
+  const id = req.params.id;
+  const filter = { _id: new ObjectId(id) }
+  const options = { upsert: true }
+  const updateProduct = req.body;
+  const product = {
+    $set: {
+      photo: updateProduct.photo,
+      name: updateProduct.name,
+      brandName: updateProduct.brandName,
+      type: updateProduct.type,
+      price: updateProduct.price,
+      description: updateProduct.description,
+      rating: updateProduct.rating,
+    }
+  }
+
+  const result=await ProductCullections.updateOne(filter,product,options)
+  res.send(result)
+})
+
+
+
+
+
+
 
 
 
@@ -56,15 +125,23 @@ app.delete('/products/:id',async(req,res)=>{
  res.send(result)
 })
 
+app.get('/carts/idnodemin/:id', async (req, res) => {
+  const id = req.params.id;
+  const query = { _id:new ObjectId(id)};
+  const result = await CartCullections.findOne(query);
+  res.send(result);
+});
 
-app.post('/products',async(req,res)=>{
-  const newproduct=req.body
-const result=await ProductCullections.insertOne(newproduct)
-res.send(result)
 
 
-})
 
+app.post('/carts', async (req, res) => {
+  const cartproduct = req.body;
+  console.log(cartproduct)
+  const result = await CartCullections.insertOne(cartproduct);
+  console.log(result)
+  res.send(result);
+});
 
 
 
